@@ -1,0 +1,51 @@
+import fitz  # PyMuPDF
+from docx import Document
+from docx.shared import Pt
+from tkinter import filedialog, Tk
+
+def convert_pdf_to_docx(pdf_path, docx_path):
+    # Create a new DOCX document
+    doc = Document()
+    doc.styles['Normal'].font.size = Pt(12)
+
+    # Open the PDF file
+    pdf_document = fitz.open(pdf_path)
+    for page_num in range(len(pdf_document)):
+        page = pdf_document[page_num]
+        text = page.get_text("text")
+
+        # Check if text was extracted
+        if text:
+            if page_num > 0:
+                doc.add_page_break()
+            doc.add_paragraph(text)
+        else:
+            print(f"Warning: No text found on page {page_num + 1}")
+
+    pdf_document.close()
+    doc.save(docx_path)
+    print(f"Conversion complete. Saved as: {docx_path}")
+
+def select_pdf_file():
+    # Use tkinter to open a file dialog for PDF selection
+    root = Tk()
+    root.withdraw()  # Hide the main window
+    pdf_path = filedialog.askopenfilename(title="Select PDF File", filetypes=[("PDF Files", "*.pdf")])
+    root.destroy()
+    return pdf_path
+
+def main():
+    # Prompt the user to select the PDF file
+    pdf_path = select_pdf_file()
+    if not pdf_path:
+        print("No file selected.")
+        return
+
+    # Output DOCX file path
+    docx_path = pdf_path.replace(".pdf", ".docx")
+
+    # Convert PDF to DOCX
+    convert_pdf_to_docx(pdf_path, docx_path)
+
+if __name__ == "__main__":
+    main()
