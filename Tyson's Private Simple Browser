@@ -1,4 +1,4 @@
-
+# Python Source Code for the own private simple browser program for windows x64bit
 import sys
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QToolBar, QAction, QLineEdit, QTabWidget, QMenu, QFileDialog
