@@ -1,0 +1,125 @@
+
+import sys
+from PyQt6.QtWidgets import (
+    QApplication, QMainWindow, QToolBar, QAction, QLineEdit, QTabWidget, QMenu, QFileDialog
+)
+from PyQt6.QtWebEngineWidgets import QWebEngineView, QWebEngineSettings
+from PyQt6.QtGui import QIcon
+from PyQt6.QtCore import QUrl, Qt
+
+class WebBrowser(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Kayto's Private Web Browser")
+        self.setGeometry(100, 100, 1200, 800)
+
+        # Tab widget for multiple tabs
+        self.tabs = QTabWidget()
+        self.tabs.setDocumentMode(True)
+        self.tabs.setTabsClosable(True)
+        self.tabs.tabCloseRequested.connect(self.close_current_tab)
+        self.tabs.currentChanged.connect(self.update_url_bar)
+        self.setCentralWidget(self.tabs)
+
+        # Navigation toolbar
+        self.toolbar = QToolBar()
+        self.addToolBar(self.toolbar)
+
+        # Back button
+        back_action = QAction("Back", self)
+        back_action.triggered.connect(self.go_back)
+        self.toolbar.addAction(back_action)
+
+        # Forward button
+        forward_action = QAction("Forward", self)
+        forward_action.triggered.connect(self.go_forward)
+        self.toolbar.addAction(forward_action)
+
+        # Refresh button
+        refresh_action = QAction("Refresh", self)
+        refresh_action.triggered.connect(self.reload_page)
+        self.toolbar.addAction(refresh_action)
+
+        # Home button
+        home_action = QAction("Home", self)
+        home_action.triggered.connect(self.navigate_home)
+        self.toolbar.addAction(home_action)
+
+        # New tab button
+        new_tab_action = QAction("New Tab", self)
+        new_tab_action.triggered.connect(self.add_new_tab)
+        self.toolbar.addAction(new_tab_action)
+
+        # URL bar
+        self.url_bar = QLineEdit()
+        self.url_bar.returnPressed.connect(self.navigate_to_url)
+        self.toolbar.addWidget(self.url_bar)
+
+        # Add the initial tab
+        self.add_new_tab(QUrl("https://www.google.com"), "Home")
+
+    def add_new_tab(self, qurl=None, label="New Tab"):
+        if qurl is None:
+            qurl = QUrl("https://www.google.com")
+
+        # Create a new web view for the tab
+        browser = QWebEngineView()
+        browser.setUrl(qurl)
+
+        # Enable JavaScript and related settings
+        browser.settings().setAttribute(QWebEngineSettings.WebAttribute.JavascriptEnabled, True)
+        browser.settings().setAttribute(QWebEngineSettings.WebAttribute.JavascriptCanOpenWindows, True)
+        browser.settings().setAttribute(QWebEngineSettings.WebAttribute.JavascriptCanAccessClipboard, True)
+        browser.settings().setAttribute(QWebEngineSettings.WebAttribute.LocalContentCanAccessRemoteUrls, True)
+        browser.settings().setAttribute(QWebEngineSettings.WebAttribute.AllowRunningInsecureContent, True)
+
+        # Connect signals
+        browser.urlChanged.connect(lambda qurl, browser=browser: self.update_url(qurl, browser))
+        browser.titleChanged.connect(lambda title, browser=browser: self.update_tab_title(title, browser))
+
+        # Add the new tab
+        i = self.tabs.addTab(browser, label)
+        self.tabs.setCurrentIndex(i)
+
+    def close_current_tab(self, index):
+        if self.tabs.count() > 1:
+            self.tabs.removeTab(index)
+
+    def update_url_bar(self, index):
+        if self.tabs.count() > 0:
+            qurl = self.tabs.currentWidget().url()
+            self.url_bar.setText(qurl.toString())
+
+    def navigate_home(self):
+        self.tabs.currentWidget().setUrl(QUrl("https://www.google.com"))
+
+    def navigate_to_url(self):
+        url = self.url_bar.text()
+        if not url.startswith("http"):
+            url = "http://" + url
+        self.tabs.currentWidget().setUrl(QUrl(url))
+
+    def update_url(self, qurl, browser):
+        if browser == self.tabs.currentWidget():
+            self.url_bar.setText(qurl.toString())
+            self.setWindowTitle(qurl.toString())
+
+    def update_tab_title(self, title, browser):
+        index = self.tabs.indexOf(browser)
+        if index >= 0:
+            self.tabs.setTabText(index, title)
+
+    def go_back(self):
+        self.tabs.currentWidget().back()
+
+    def go_forward(self):
+        self.tabs.currentWidget().forward()
+
+    def reload_page(self):
+        self.tabs.currentWidget().reload()
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = WebBrowser()
+    window.show()
+    sys.exit(app.exec())
