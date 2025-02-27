@@ -1,4 +1,4 @@
-#Python Source Codes
+#Python Source Code for the own PDF to Word Simple converter program for windows x64bit
 import fitz  # PyMuPDF
 from docx import Document
 from docx.shared import Pt
