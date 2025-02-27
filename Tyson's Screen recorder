@@ -11,13 +11,13 @@ from tkinter import messagebox
 
 import os
 
-# Get the path to the Videos folder
+# Videos folder
 videos_folder = os.path.join(os.environ['USERPROFILE'], 'Videos')
 
-# Define the new folder name
+# Folder name
 new_folder_name = "Tyson_Recording_Folder"
 
-# Create the full path for the new folder
+# Create the path
 new_folder_path = os.path.join(videos_folder, new_folder_name)
 
 # Create the folder (if it doesn't exist already)
