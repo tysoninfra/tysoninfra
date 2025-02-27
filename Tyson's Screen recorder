@@ -70,8 +70,8 @@ def stop_recording():
 def record_screen():
     global recording, out
 
-    cv2.namedWindow("Kaytolive", cv2.WINDOW_NORMAL)
-    cv2.resizeWindow("Kaytolive", 480, 270)
+    cv2.namedWindow("Tysonlive", cv2.WINDOW_NORMAL)
+    cv2.resizeWindow("Tysonlive", 480, 270)
 
     while recording:
         start_time = time.time()
