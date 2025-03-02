@@ -4,7 +4,7 @@
    <h2>
     <h3># Active Directory(AD/DC) Setup Guide<h3>
       <body1>Active Directory is the major component of the Windows base IT Infrastructure.
-        I will update soon, Stay tune!!!
+        I will update here soon, Stay tune!!!
         <body1>
     
 <!--
